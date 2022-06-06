@@ -2,6 +2,10 @@ package golang_united_school_homework
 
 import "errors"
 
+const (
+	ERROR_MESSAGE = "shape by index doesn't exist or index went out of the range"
+)
+
 // box contains list of shapes and able to perform operations on them
 type box struct {
 	shapes         []Shape
@@ -29,7 +33,7 @@ func (b *box) AddShape(shape Shape) error {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) GetByIndex(i int) (Shape, error) {
 	if i >= len(b.shapes) {
-		return nil, errors.New("shape by index doesn't exist or index went out of the range")
+		return nil, errors.New(ERROR_MESSAGE)
 	}
 	return b.shapes[i], nil
 }
@@ -38,7 +42,7 @@ func (b *box) GetByIndex(i int) (Shape, error) {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ExtractByIndex(i int) (Shape, error) {
 	if i >= len(b.shapes) {
-		return nil, errors.New("shape by index doesn't exist or index went out of the range")
+		return nil, errors.New(ERROR_MESSAGE)
 	}
 	shape := b.shapes[i]
 	b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
@@ -49,7 +53,7 @@ func (b *box) ExtractByIndex(i int) (Shape, error) {
 // whether shape by index doesn't exist or index went out of the range, then it returns an error
 func (b *box) ReplaceByIndex(i int, shape Shape) (Shape, error) {
 	if i >= len(b.shapes) {
-		return nil, errors.New("shape by index doesn't exist or index went out of the range")
+		return nil, errors.New(ERROR_MESSAGE)
 	}
 	removed := b.shapes[i]
 	b.shapes[i] = shape
@@ -75,15 +79,15 @@ func (b *box) SumArea() (sum float64) {
 // RemoveAllCircles removes all circles in the list
 // whether circles are not exist in the list, then returns an error
 func (b *box) RemoveAllCircles() error {
-	counter := 0
-	for i, shape := range b.shapes {
-		if _, ok := shape.(Circle); ok {
-			b.shapes = append(b.shapes[:i], b.shapes[i+1:]...)
-			counter += 1
+	shapes := make([]Shape, 0)
+	for _, shape := range b.shapes {
+		if _, ok := shape.(Circle); !ok {
+			shapes = append(shapes, shape)
 		}
 	}
-	if counter == 0 {
+	if len(b.shapes) == len(shapes) {
 		return errors.New("circles are not exist in the list")
 	}
+	b.shapes = shapes
 	return nil
 }
